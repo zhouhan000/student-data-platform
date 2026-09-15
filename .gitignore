@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+
+students.json
+students_backup.json
+students_backup_bad.json
+students_text.json
+student.json
+student_json
+.idea/
