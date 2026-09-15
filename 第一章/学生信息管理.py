@@ -23,7 +23,7 @@ def main():
     manager = StudentManager(students)
     while True:
         show_menu()
-        choice = input("请选择功能")
+        choice = input("请选择功能").strip()
         if choice == "1":
             manager.show_students()
 
@@ -43,7 +43,7 @@ def main():
             target_score = input_score()
             success = manager.update_score(target_name, target_score)
             if success:
-                save_students(students)
+                save_students(manager.students)
                 print("修改成功")
             else:
                 print("没有查找到这个学生")
@@ -52,7 +52,7 @@ def main():
             target_name = input("请输入你要删除学生的姓名：")
             success = manager.delete_student(target_name)
             if success:
-                save_students(students)
+                save_students(manager.students)
                 print("删除成功")
             else:
                 print("没有查找到这个学生")
@@ -62,7 +62,7 @@ def main():
             score = input_score()
             result = manager.add_student(name, score)
             if result == "success":
-                save_students(students)
+                save_students(manager.students)
                 print("添加成功")
             elif result == "invalid_score":
                 print("成绩无效")
@@ -92,7 +92,7 @@ def main():
             backup_students(manager.students)
 
         elif choice == "9":
-            confirm = input("恢复备份会覆盖当前数据，确认恢复吗？(y/n)：")
+            confirm = input("恢复备份会覆盖当前数据，确认恢复吗？(y/n)：").strip().lower()
 
             if confirm == "y":
                 restored_students = restore_students()
@@ -111,7 +111,7 @@ def main():
             export_students(manager.students)
 
         elif choice == "0":
-            save_students(students)
+            save_students(manager.students)
             print("数据已保存，程序已退出")
             break
 

@@ -13,7 +13,7 @@ class StudentManager:
     def add_student(self, name, score):
         if name.strip() == "":
             return "invalid_name"
-
+        name = name.strip()
         if score < 0 or score > 100:
             return "invalid_score"
 
@@ -93,22 +93,3 @@ class StudentManager:
         print(f"及格人数：{passed_count}")
         print(f"及格率：{pass_rate:.2f}%")
 
-if __name__ == "__main__":
-    test_students = [
-        {"name": "小明", "score": 85, "grade": "良好"}
-    ]
-    manager = StudentManager(test_students)
-    new_student = {
-        "name": "小红",
-        "score": 92,
-        "grade": "优秀"
-    }
-    manager.show_students()
-    print(manager.find_student("小红"))
-    print(manager.find_student("不存在"))
-    print(manager.update_score("小明", 95))
-    manager.show_students()
-    print(manager.delete_student("小红"))
-    manager.show_students()
-    print(manager.delete_student("不存在"))
-    print(manager.find_top_students())
