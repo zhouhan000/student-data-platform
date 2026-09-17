@@ -31,7 +31,15 @@ def add_student_to_db(name,score,grade):
     )
     connection.commit()
     connection.close()
+def get_all_students():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT name, score, grade FROM students"
+    )
+    students = cursor.fetchall()
+    connection.close()
+    return students
 
 if __name__ == '__main__':
     init_db()
-#    add_student_to_db("张三",90,"优秀")
