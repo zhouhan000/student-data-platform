@@ -1,6 +1,8 @@
 import sqlite3
+def get_connection():
+    return sqlite3.connect("students.db")
 def init_db():
-    connection = sqlite3.connect('students.db')
+    connection = get_connection()
 
     print("数据库连接成功")
 
