@@ -9,3 +9,4 @@ students_text.json
 student.json
 student_json
 .idea/
+*.db
