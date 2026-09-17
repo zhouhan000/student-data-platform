@@ -1,17 +1,20 @@
 import sqlite3
+def init_db():
+    connection = sqlite3.connect('students.db')
 
-connection = sqlite3.connect("students.db")
-print("数据库连接成功")
+    print("数据库连接成功")
 
-cursor = connection.cursor()
+    cursor = connection.cursor()
 
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        score REAL NOT NULL,
-        grade TEXT NOT NULL
-    )
-""")
-connection.commit()
-connection.close()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            score REAL NOT NULL,
+            grade TEXT NOT NULL
+        )
+    """)
+    connection.commit()
+    connection.close()
+if __name__ == '__main__':
+    init_db()
