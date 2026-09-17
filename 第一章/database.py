@@ -71,6 +71,22 @@ def delete_student_by_name(name):
     connection.close()
     return deleted_count>0
 
+def update_student_grade(name,new_score,new_grade):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        UPDATE students 
+        SET score = ?, grade = ?
+        WHERE name = ?
+        """,
+        (new_score,new_grade,name)
+    )
+    update_count = cursor.rowcount
+    connection.commit()
+    connection.close()
+    return update_count>0
+
 
 if __name__ == '__main__':
     init_db()
