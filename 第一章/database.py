@@ -31,6 +31,7 @@ def add_student_to_db(name,score,grade):
     )
     connection.commit()
     connection.close()
+
 def get_all_students():
     connection = get_connection()
     cursor = connection.cursor()
@@ -40,6 +41,7 @@ def get_all_students():
     students = cursor.fetchall()
     connection.close()
     return students
+
 def find_student_by_name(name):
     connection = get_connection()
     cursor = connection.cursor()
@@ -53,6 +55,22 @@ def find_student_by_name(name):
     student = cursor.fetchone()
     connection.close()
     return student
+
+def delete_student_by_name(name):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        DELETE FROM students 
+        WHERE name = ?
+        """,
+        (name,)
+    )
+    deleted_count = cursor.rowcount
+    connection.commit()
+    connection.close()
+    return deleted_count>0
+
 
 if __name__ == '__main__':
     init_db()
