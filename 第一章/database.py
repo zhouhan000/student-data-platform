@@ -40,6 +40,19 @@ def get_all_students():
     students = cursor.fetchall()
     connection.close()
     return students
+def find_student_by_name(name):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT name, score, grade FROM students
+        WHERE name = ?
+        """,
+        (name,)
+    )
+    student = cursor.fetchone()
+    connection.close()
+    return student
 
 if __name__ == '__main__':
     init_db()
