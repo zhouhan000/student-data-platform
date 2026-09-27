@@ -1,6 +1,8 @@
 import sqlite3
+from pathlib import Path
+DB_PATH = Path(__file__).resolve().parent.parent / "students.db"
 def get_connection():
-    return sqlite3.connect(",tudents.db")
+    return sqlite3.connect(DB_PATH)
 def init_db():
     connection = get_connection()
 
@@ -19,9 +21,10 @@ def init_db():
     connection.commit()
     connection.close()
 
-def add_student_to_db(name,score,grade):
+def add_student_to_db(name, score, grade):
     connection = get_connection()
     cursor = connection.cursor()
+
     cursor.execute(
         """
         INSERT INTO students (name, score, grade)
@@ -29,58 +32,63 @@ def add_student_to_db(name,score,grade):
         """,
         (name, score, grade)
     )
+
+    student_id = cursor.lastrowid
+
     connection.commit()
     connection.close()
+
+    return student_id
 
 def get_all_students():
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT name, score, grade FROM students"
+        "SELECT id, name, score, grade FROM students"
     )
     students = cursor.fetchall()
     connection.close()
     return students
 
-def find_student_by_name(name):
+def find_student_by_id(student_id):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
         """
-        SELECT name, score, grade FROM students
-        WHERE name = ?
+        SELECT id, name, score, grade FROM students
+        WHERE id = ?
         """,
-        (name,)
+        (student_id,)
     )
     student = cursor.fetchone()
     connection.close()
     return student
 
-def delete_student_by_name(name):
+def delete_student_by_id(student_id):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
         """
         DELETE FROM students 
-        WHERE name = ?
+        WHERE id = ?
         """,
-        (name,)
+        (student_id,)
     )
     deleted_count = cursor.rowcount
     connection.commit()
     connection.close()
     return deleted_count>0
 
-def update_student_grade(name,new_score,new_grade):
+def update_student_grade_by_id(student_id,new_score,new_grade):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
         """
         UPDATE students 
         SET score = ?, grade = ?
-        WHERE name = ?
+        WHERE id = ?
         """,
-        (new_score,new_grade,name)
+        (new_score,new_grade,student_id)
     )
     update_count = cursor.rowcount
     connection.commit()
