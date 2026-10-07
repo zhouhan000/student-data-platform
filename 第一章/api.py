@@ -1,3 +1,4 @@
+from storage import get_grade
 from fastapi import FastAPI, HTTPException
 from database import (
     get_all_students,
@@ -8,22 +9,19 @@ from database import (
 )
 from pydantic import BaseModel, Field
 
-class StudentBase(BaseModel):
+class StudentCreate(BaseModel):
     name: str
-    score: float = Field(ge=0, le=100)
-    grade: str
-
-
-class StudentCreate(StudentBase):
-    pass
+    score: float= Field(ge=0, le=100)
 
 
 class StudentUpdate(BaseModel):
     score: float = Field(ge=0, le=100)
-    grade: str
 
-class StudentResponse(StudentCreate):
+class StudentResponse(BaseModel):
     id: int
+    name: str
+    score: float= Field(ge=0, le=100)
+    grade: str
 
 class MessageResponse(BaseModel):
     message: str
@@ -51,17 +49,18 @@ def list_students():
     response_model=StudentResponse,
 )
 def create_student(student: StudentCreate):
+    grade = get_grade(student.score)
     student_id = add_student_to_db(
         student.name,
         student.score,
-        student.grade
+        grade,
     )
 
     return {
         "id": student_id,
         "name": student.name,
         "score": student.score,
-        "grade": student.grade,
+        "grade": grade,
     }
 @app.delete("/students/{student_id}",response_model=MessageResponse)
 def delete_student(student_id: int):
@@ -73,7 +72,7 @@ def delete_student(student_id: int):
 
 @app.put("/students/{student_id}",response_model=MessageResponse)
 def update_student(student_id:int,student: StudentUpdate):
-    updated = update_student_grade_by_id(student_id,student.score, student.grade)
+    updated = update_student_grade_by_id(student_id,student.score, )
     if updated:
         return {"message":"学生更新成功"}
 

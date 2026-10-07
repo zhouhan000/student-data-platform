@@ -1,4 +1,5 @@
 import sqlite3
+from storage import get_grade
 from pathlib import Path
 DB_PATH = Path(__file__).resolve().parent.parent / "students.db"
 def get_connection():
@@ -79,9 +80,10 @@ def delete_student_by_id(student_id):
     connection.close()
     return deleted_count>0
 
-def update_student_grade_by_id(student_id,new_score,new_grade):
+def update_student_grade_by_id(student_id,new_score):
     connection = get_connection()
     cursor = connection.cursor()
+    new_grade = get_grade(new_score)
     cursor.execute(
         """
         UPDATE students 
