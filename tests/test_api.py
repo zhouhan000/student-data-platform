@@ -1,10 +1,7 @@
-import sys
-from pathlib import Path
-
 from fastapi.testclient import TestClient
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "第一章"))
-from api import app
+from app import database
+from app.api import app
 
 
 def test_home():
@@ -15,7 +12,6 @@ def test_home():
     assert response.json() == {"message": "API运行正常"}
 
 def test_reject_invalid_score(tmp_path, monkeypatch):
-    import database
     monkeypatch.setattr(database, "DB_PATH", tmp_path / "students.db")
     database.init_db()
     client = TestClient(app)
@@ -29,7 +25,6 @@ def test_reject_invalid_score(tmp_path, monkeypatch):
     assert response.status_code == 422
 
 def test_get_missing_student(tmp_path, monkeypatch):
-    import database
 
     monkeypatch.setattr(database, "DB_PATH", tmp_path / "students.db")
     database.init_db()
@@ -39,7 +34,6 @@ def test_get_missing_student(tmp_path, monkeypatch):
     assert response.json() == {"detail":"未找到该学生"}
 
 def test_student_crud(tmp_path, monkeypatch):
-    import database
 
     monkeypatch.setattr(database, "DB_PATH", tmp_path / "students.db")
     database.init_db()
@@ -87,7 +81,7 @@ def test_student_crud(tmp_path, monkeypatch):
     assert get_result["score"] == 75
     assert get_result["grade"] == "及格"
 
-    get_response = client.get(f"/students")
+    get_response = client.get("/students")
     assert get_response.status_code == 200
     get_result = get_response.json()
     found = False
@@ -119,7 +113,7 @@ def test_student_crud(tmp_path, monkeypatch):
     assert update_result == {"detail":"未找到该学生"}
 
 
-    get_response = client.get(f"/students")
+    get_response = client.get("/students")
     assert get_response.status_code == 200
     get_result = get_response.json()
     found = False

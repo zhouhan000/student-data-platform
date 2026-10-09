@@ -1,9 +1,13 @@
 import sqlite3
-from storage import get_grade
 from pathlib import Path
+
+from .grading import get_grade
+
 DB_PATH = Path(__file__).resolve().parent.parent / "students.db"
+
 def get_connection():
     return sqlite3.connect(DB_PATH)
+
 def init_db():
     connection = get_connection()
 
@@ -78,9 +82,9 @@ def delete_student_by_id(student_id):
     deleted_count = cursor.rowcount
     connection.commit()
     connection.close()
-    return deleted_count>0
+    return deleted_count > 0
 
-def update_student_grade_by_id(student_id,new_score):
+def update_student_grade_by_id(student_id, new_score):
     connection = get_connection()
     cursor = connection.cursor()
     new_grade = get_grade(new_score)
@@ -90,13 +94,13 @@ def update_student_grade_by_id(student_id,new_score):
         SET score = ?, grade = ?
         WHERE id = ?
         """,
-        (new_score,new_grade,student_id)
+        (new_score, new_grade, student_id)
     )
     update_count = cursor.rowcount
     connection.commit()
     connection.close()
-    return update_count>0
+    return update_count > 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     init_db()

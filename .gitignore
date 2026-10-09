@@ -10,3 +10,7 @@ student.json
 student_json
 .idea/
 *.db
+.pytest_cache/
+*.db-journal
+*.db-wal
+*.db-shm

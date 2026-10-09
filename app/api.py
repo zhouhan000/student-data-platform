@@ -1,35 +1,41 @@
-from storage import get_grade
 from fastapi import FastAPI, HTTPException
-from database import (
+from pydantic import BaseModel, Field
+
+from .database import (
     get_all_students,
     add_student_to_db,
     delete_student_by_id,
     find_student_by_id,
     update_student_grade_by_id,
 )
-from pydantic import BaseModel, Field
+from .grading import get_grade
+
 
 class StudentCreate(BaseModel):
     name: str
-    score: float= Field(ge=0, le=100)
+    score: float = Field(ge=0, le=100)
 
 
 class StudentUpdate(BaseModel):
     score: float = Field(ge=0, le=100)
 
+
 class StudentResponse(BaseModel):
     id: int
     name: str
-    score: float= Field(ge=0, le=100)
+    score: float = Field(ge=0, le=100)
     grade: str
+
 
 class MessageResponse(BaseModel):
     message: str
+
 app = FastAPI(title="学生管理系统 API")
 
 @app.get("/", response_model=MessageResponse)
 def home():
     return {"message": "API运行正常"}
+
 @app.get("/students", response_model=list[StudentResponse])
 def list_students():
     students = get_all_students()
@@ -42,6 +48,7 @@ def list_students():
         }
         for student_id, name, score, grade in students
     ]
+
 
 @app.post(
     "/students",
@@ -62,7 +69,8 @@ def create_student(student: StudentCreate):
         "score": student.score,
         "grade": grade,
     }
-@app.delete("/students/{student_id}",response_model=MessageResponse)
+
+@app.delete("/students/{student_id}", response_model=MessageResponse)
 def delete_student(student_id: int):
     deleted = delete_student_by_id(student_id)
     if deleted:
@@ -70,11 +78,11 @@ def delete_student(student_id: int):
 
     raise HTTPException(status_code=404, detail="未找到该学生")
 
-@app.put("/students/{student_id}",response_model=MessageResponse)
-def update_student(student_id:int,student: StudentUpdate):
-    updated = update_student_grade_by_id(student_id,student.score, )
+@app.put("/students/{student_id}", response_model=MessageResponse)
+def update_student(student_id: int, student: StudentUpdate):
+    updated = update_student_grade_by_id(student_id, student.score)
     if updated:
-        return {"message":"学生更新成功"}
+        return {"message": "学生更新成功"}
 
     raise HTTPException(status_code=404, detail="未找到该学生")
 
