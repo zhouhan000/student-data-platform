@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel, Field, field_validator
 from .database import (
     get_all_students,
     add_student_to_db,
@@ -14,6 +13,13 @@ from .grading import get_grade
 class StudentCreate(BaseModel):
     name: str
     score: float = Field(ge=0, le=100)
+    @field_validator("name")
+    @classmethod
+    def normalize_name(cls,value:str)->str:
+        cleaned = value.strip()
+        if 0< len(cleaned) <=50:
+            return cleaned
+        raise ValueError("姓名长度只能在1到50之间")
 
 
 class StudentUpdate(BaseModel):
