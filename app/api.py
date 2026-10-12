@@ -92,6 +92,43 @@ def update_student(student_id: int, student: StudentUpdate):
 
     raise HTTPException(status_code=404, detail="未找到该学生")
 
+@app.get("/students/stats")
+def get_student_stats():
+    students = get_all_students()
+    total_students = len(students)
+
+    grade_counts = {
+        "不及格": 0,
+        "及格": 0,
+        "良好": 0,
+        "优秀": 0,
+    }
+
+    if total_students == 0:
+        return {
+            "total_students": 0,
+            "average_score": None,
+            "passing_students": 0,
+            "pass_rate": None,
+            "grade_counts": grade_counts,
+        }
+
+    # get_all_students() 的每条记录是 (id, name, score, grade)
+    scores = [student[2] for student in students]
+    passing_students = sum(score >= 60 for score in scores)
+
+    for score in scores:
+        grade_counts[get_grade(score)] += 1
+
+    return {
+        "total_students": total_students,
+        "average_score": round(sum(scores) / total_students, 2),
+        "passing_students": passing_students,
+        "pass_rate": round(passing_students / total_students * 100, 2),
+        "grade_counts": grade_counts,
+    }
+
+
 @app.get(
     "/students/{student_id}",
     response_model=StudentResponse,

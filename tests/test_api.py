@@ -225,3 +225,40 @@ def test_allow_duplicate_student_names(tmp_path, monkeypatch):
     get_result = get_response.json()
     assert get_result["name"] == "王五"
     assert get_result["score"] == 93
+
+
+def test_student_stats_empty_database(tmp_path, monkeypatch):
+    monkeypatch.setattr(database, "DB_PATH", tmp_path / "students.db")
+    database.init_db()
+    client = TestClient(app)
+
+    response = client.get("/students/stats")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_students": 0,
+        "average_score": None,
+        "passing_students": 0,
+        "pass_rate": None,
+        "grade_counts": {"不及格": 0, "及格": 0, "良好": 0, "优秀": 0},
+    }
+
+
+def test_student_stats_scores_and_pass_boundary(tmp_path, monkeypatch):
+    monkeypatch.setattr(database, "DB_PATH", tmp_path / "students.db")
+    database.init_db()
+    client = TestClient(app)
+    for name, score in (("甲", 59), ("乙", 60), ("丙", 90)):
+        response = client.post("/students", json={"name": name, "score": score})
+        assert response.status_code == 201
+
+    response = client.get("/students/stats")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_students": 3,
+        "average_score": 69.67,
+        "passing_students": 2,
+        "pass_rate": 66.67,
+        "grade_counts": {"不及格": 1, "及格": 1, "良好": 0, "优秀": 1},
+    }
